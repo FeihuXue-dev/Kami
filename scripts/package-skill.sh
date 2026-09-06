@@ -34,6 +34,7 @@ PACKAGE_REQUIRED_ENTRIES=(
   "scripts/mathjax-runtime/package-lock.json"
   "scripts/site_facts.py"
   "scripts/content.py"
+  "scripts/html_visibility.py"
   "scripts/visual.py"
   "scripts/mcp_server.py"
   "references/schemas/resume.json"

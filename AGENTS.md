@@ -16,8 +16,9 @@ One repository, three top-level roles, and the install tools only ever copy the 
   `CHEATSHEET.md`, `VERSION`, `LICENSE`, `references/`, `scripts/`, and the light
   `assets/` (templates, diagrams, logo, the two small font files). `npx skills add
   tw93/kami` copies exactly this directory; `bash scripts/package-skill.sh` zips it
-  as `kami/` for Claude Desktop; `plugins/kami/` is a generated copy of it for the
-  Claude and Codex plugin marketplaces. Every skill-relative path in `SKILL.md`
+  as `kami/` for Claude Desktop; `plugins/kami/skills/kami/` is a generated copy of it
+  inside the Claude and Codex plugin. Ignored render output lives in
+  `skills/kami/assets/examples/`. Every skill-relative path in `SKILL.md`
   resolves inside this directory, so nothing here may reach up into the repo.
 - `site/` is kami.tw93.fun. The Vercel project's Root Directory is `site` (project
   setting, not a file), so only this tree deploys and `site/vercel.json` is the only
@@ -29,13 +30,14 @@ One repository, three top-level roles, and the install tools only ever copy the 
   `package-skill.sh`, `release_gate.py`, `draft-release-notes.py`, `tests/`),
   `assets/fonts/` (the commercial TTFs; run `bash skills/kami/scripts/ensure-fonts.sh`
   once after cloning to copy them into the skill's ignored `assets/fonts/`, otherwise
-  templates fall back to jsDelivr), `assets/examples/`
-  (ignored render output), `docs/`, and `.github/`.
+  templates fall back to jsDelivr), `docs/`, and `.github/`.
 
 Run skill-side commands from `skills/kami/` (`cd skills/kami && python3
 scripts/build.py --check`); the paths below are written from that directory unless
 they start with `scripts/build_metadata.py`, `scripts/package-skill.sh`,
-`scripts/release_gate.py`, or `scripts/tests/`, which live at the root.
+`scripts/release_gate.py`, or `scripts/tests/`, which live at the root. Paths under
+`site/`, `plugins/`, `docs/`, `.github/`, `.claude-plugin/`, and `.agents/` are also
+relative to the repository root.
 
 ## Repository Map
 
@@ -65,6 +67,11 @@ Only the entries whose role is not obvious from the filename:
 - `scripts/render.py` - the single render entry (`render_pdf`, `build_slides`, PDF
   metadata stamping). `build.py`, `verify.py`, and `mcp_server.py` all call it; never
   open a second WeasyPrint call site.
+- `scripts/html_visibility.py` - shared static HTML/CSS visibility analysis for
+  `content.py` coverage and `checks.py` residue checks. Keep its conservative
+  coverage and residue modes distinct; it does not implement browser layout.
+- `scripts/tests/test_build.py` - the stable test entry point; sibling `test_*.py`
+  modules group tests by responsibility, with counters and fixtures in `support.py`.
 - `scripts/mermaid_normalize.py` - re-themes a beautiful-mermaid SVG to the Kami
   palette and makes it WeasyPrint-safe. Pure Python, no Node, ships in the package.
 - `scripts/mcp_server.py` - zero-dependency MCP stdio server exposing
@@ -147,11 +154,14 @@ python3 scripts/mermaid_normalize.py raw.svg -o clean.svg
   deliberate counter-example inline with `/* avoid */` so the scan reads it as the
   lesson rather than the violation.
 - A change touching template tokens, shared CSS gestures, or `references/design.md`
-  visual rules must rebuild the affected demo outputs (`assets/demos/*.pdf` / `*.png`)
+  visual rules must rebuild the affected demo outputs (`site/assets/demos/*.pdf` / `*.png`)
   in the same change, not as a later cleanup. Demos inline their CSS by copy, so they
   silently keep the old style otherwise. Report the sweep: rebuilt N demos, K
-  unaffected. The off-palette guard in `scripts/lint.py` scans `assets/demos/*.html`
+  unaffected. The off-palette guard in `scripts/lint.py` scans `site/assets/demos/*.html`
   for stale hexes as a backstop, but it cannot see rendered PDFs or PNGs.
+  Repository scans must reject an empty expected demo set; installed skills may
+  skip the site because it is outside their distribution boundary. Test both modes
+  with a known violating demo whenever repository paths change.
 - Templates intentionally inline their CSS rather than share a `_kami.css` partial:
   each template must stay a single self-contained HTML file the user can copy-paste
   with no build step. Fix CSS drift by applying the same change across the affected
@@ -208,8 +218,10 @@ python3 scripts/mermaid_normalize.py raw.svg -o clean.svg
 
 ## Generated Mirrors
 
-`plugins/kami/` is a byte-for-byte copy of `skills/kami/` plus the two plugin
-manifests; `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json`
+`plugins/kami/skills/kami/` mirrors the distributable files from `skills/kami/`;
+the two plugin manifests live in the outer `plugins/kami/` directory. The generated
+copy excludes local fonts, render output, and caches. `.claude-plugin/marketplace.json`
+and `.agents/plugins/marketplace.json`
 point at it. Edit `skills/kami/` only and let `python3 scripts/build_metadata.py
 --check` catch drift. Regenerate after any change under `skills/kami/`.
 
@@ -248,10 +260,10 @@ proof, not metadata proof. Claude Code: an isolated `HOME=/tmp/...` smoke with
 - If `python3 scripts/build.py --verify` fails only because the host Python lacks PPTX
   fallback dependencies such as `python-pptx`, verify `slides` and `slides-en` from a
   temporary venv instead of treating the environment miss as a source regression.
-- Resume templates (`assets/templates/resume.html`, `resume-ko.html`) carry a two-page
+- Resume templates (`assets/templates/resume.html`, `resume-en.html`, `resume-ko.html`) carry a two-page
   contract. Do not fix overflow by shrinking type or spacing globally first. Verify
-  with `python3 scripts/build.py --verify resume` and `--verify resume-ko`.
-- Demo files such as `assets/demos/demo-resume-ko.html` own demo content, not the
+  with `python3 scripts/build.py --verify resume`, `--verify resume-en`, and `--verify resume-ko`.
+- Demo files such as `site/assets/demos/demo-resume-ko.html` own demo content, not the
   template contract. Durable rules go into templates or `references/`.
 
 ## CI Gotchas
@@ -287,12 +299,12 @@ dependency.
   self-contained. `build.py --sync` / `--check` token-sync those files and the CSS
   lint rules scan them (both walk `shared.iter_template_files`), so token drift is
   caught. The remaining hole: the off-palette hex guard globs `*.html` only
-  (`TEMPLATES/*.html` and `assets/demos/*.html`), so an off-palette color in Marp CSS
+  (`TEMPLATES/*.html` and `site/assets/demos/*.html`), so an off-palette color in Marp CSS
   still needs eyeball review.
-- Page counts are a ceiling, never a floor. `build.py --verify` fails only when a PDF
-  exceeds `build_max_pages` in `scripts/shared.py` (one-pager 1, letter 1, resume 2,
+- Resume targets require exactly two pages in all three language variants. Other
+  `build_max_pages` values in `scripts/shared.py` are ceilings (one-pager 1, letter 1,
   changelog 2, equity-report 3; long-doc, portfolio, and slides-weasy are `0` =
-  unlimited). An undershooting document is never flagged, so "this long-doc came out
+  unlimited). Other undershooting documents are not flagged, so "this long-doc came out
   at 3 pages" is an authoring judgment call, not a gate failure. Landing pages are
   browser-only HTML with no page count at all.
 - `scripts/render.py` sets PDF `/Author` from `git config user.name` or `KAMI_AUTHOR`
@@ -378,8 +390,9 @@ drift out of it:
 - `bash scripts/ensure-fonts.sh` downloads into the XDG user font dir
   (`${XDG_DATA_HOME:-~/.local/share}/fonts/kami`, override with `KAMI_FONT_DIR`),
   never into the skill's `assets/fonts`, so an installed Claude Desktop skill stays
-  small. Inside a repo checkout it is a no-op because the committed fonts already
-  satisfy the templates' relative paths. Commercial use of TsangerJinKai02 requires
+  small. Inside a repo checkout it first copies missing font files from the root
+  `assets/fonts/` into the skill's ignored font directory. It downloads to the user
+  font directory only when usable fonts are still missing. Commercial use of TsangerJinKai02 requires
   the appropriate license.
 
 ## Releasing

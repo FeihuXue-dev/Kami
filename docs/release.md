@@ -56,7 +56,7 @@ screenshots. Everyday template, script, and site work does not need it.
   piping `gh run watch` into `tail` swallows
   the exit code and reports an unfinished or failed run as passing.
 - The release workflow enforces the same contract before it can create an asset:
-  `TAG == V$(cat VERSION)`, the tag resolves to the checked-out commit, the commit is
+  `TAG == V$(cat skills/kami/VERSION)`, the tag resolves to the checked-out commit, the commit is
   reachable from `origin/main`, an exact-SHA `check.yml` run from a `main` push is
   complete and successful, and, when a same-version asset already exists, the rebuilt
   archive has the same entry names and per-entry SHA-256 payloads as the published one.
@@ -80,7 +80,7 @@ screenshots. Everyday template, script, and site work does not need it.
 
 ## Part 3 · Demo screenshots
 
-Every demo PNG under `assets/demos/` is 1241x1754px, the first A4 portrait page at
+Every demo PNG under `site/assets/demos/` is 1241x1754px, the first A4 portrait page at
 150dpi. Regenerate them whenever the demo's PDF changes.
 
 Portrait documents (one-pager / letter / resume / portfolio / long-doc /

@@ -2,13 +2,13 @@
 """Generate Kami plugin metadata and mirror files.
 
 Source of truth:
-  - VERSION
-  - root SKILL.md
-  - CHEATSHEET.md
-  - references/
-  - scripts/
-  - assets/templates/
-  - assets/diagrams/
+  - skills/kami/VERSION
+  - skills/kami/SKILL.md
+  - skills/kami/CHEATSHEET.md
+  - skills/kami/references/
+  - skills/kami/scripts/
+  - skills/kami/assets/templates/
+  - skills/kami/assets/diagrams/
   - selected lightweight assets
 
 Generated files:
@@ -17,10 +17,11 @@ Generated files:
   - plugins/kami/.claude-plugin/plugin.json
   - plugins/kami/.codex-plugin/plugin.json
   - plugins/kami/skills/kami/
-  - .well-known/agent-skills/index.json
-  - .well-known/mcp/server-card.json
-  - feeds/catalog.jsonld
-  - schemamap.xml
+  - site/.well-known/agent-skills/index.json
+  - site/.well-known/mcp/server-card.json
+  - site/feeds/catalog.jsonld
+  - site/schemamap.xml
+  - site/kami-skill.md
 
 Modes:
   --write  (default)  regenerate plugin files from source

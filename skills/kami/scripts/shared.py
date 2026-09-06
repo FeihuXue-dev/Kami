@@ -19,8 +19,14 @@ class TemplateSpec(NamedTuple):
 
 ROOT = Path(__file__).resolve().parent.parent
 # In a repository checkout the skill lives at <repo>/skills/kami and the
-# website at <repo>/site; an installed skill has neither.
-REPO_ROOT = ROOT.parent.parent if ROOT.parent.name == "skills" and (ROOT.parent.parent / "site").is_dir() else None
+# website at <repo>/site; an installed skill has neither. Use repository tooling
+# as the marker so a missing site cannot silently disable repository checks.
+REPO_ROOT = (
+    ROOT.parent.parent
+    if ROOT.parent.name == "skills"
+    and (ROOT.parent.parent / "scripts" / "package-skill.sh").is_file()
+    else None
+)
 SITE_ROOT = REPO_ROOT / "site" if REPO_ROOT else None
 TEMPLATES = ROOT / "assets" / "templates"
 DIAGRAMS = ROOT / "assets" / "diagrams"
