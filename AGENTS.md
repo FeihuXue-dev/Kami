@@ -390,7 +390,7 @@ drift out of it:
 - `bash scripts/ensure-fonts.sh` downloads into the XDG user font dir
   (`${XDG_DATA_HOME:-~/.local/share}/fonts/kami`, override with `KAMI_FONT_DIR`),
   never into the skill's `assets/fonts`, so an installed Claude Desktop skill stays
-  small. Inside a repo checkout it first copies missing font files from the root
+  small. Inside a repo checkout it first restores missing or truncated font files from the root
   `assets/fonts/` into the skill's ignored font directory. It downloads to the user
   font directory only when usable fonts are still missing. Commercial use of TsangerJinKai02 requires
   the appropriate license.

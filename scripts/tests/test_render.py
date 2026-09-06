@@ -32,6 +32,53 @@ from shared import PARCHMENT_RGB, TEMPLATES, load_checks_thresholds
 from verify import _classify_cjk_font, _font_family_key
 
 
+def test_font_recovery_repairs_truncated_repository_copies() -> None:
+    import os
+    import shutil
+    from support import SKILL_ROOT
+
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        script = root / "skills/kami/scripts/ensure-fonts.sh"
+        script.parent.mkdir(parents=True)
+        shutil.copyfile(SKILL_ROOT / "scripts/ensure-fonts.sh", script)
+        source = root / "assets/fonts"
+        target = root / "skills/kami/assets/fonts"
+        source.mkdir(parents=True)
+        target.mkdir(parents=True)
+        names = {"TsangerJinKai02-W04.ttf": 10000000,
+                 "TsangerJinKai02-W05.ttf": 10000000,
+                 "SourceHanSerifKR-Regular.otf": 6500000,
+                 "SourceHanSerifKR-Medium.otf": 6500000}
+        for name, size in names.items():
+            with (source / name).open("wb") as f:
+                f.truncate(size)
+        broken = target / "TsangerJinKai02-W04.ttf"
+        broken.write_bytes(b"x")
+        healthy = target / "SourceHanSerifKR-Regular.otf"
+        shutil.copyfile(source / healthy.name, healthy)
+        before = healthy.stat().st_mtime_ns
+        # A bad source must never replace a valid local copy.
+        (source / healthy.name).write_bytes(b"x")
+        bin_dir = root / "bin"
+        bin_dir.mkdir()
+        for name in ("curl", "fc-cache"):
+            stub = bin_dir / name
+            stub.write_text("#!/bin/sh\nexit 99\n")
+            stub.chmod(0o755)
+        result = subprocess.run(["bash", str(script)], capture_output=True, text=True,
+                                env={**os.environ, "PATH": f"{bin_dir}:{os.environ['PATH']}",
+                                     "KAMI_FONT_DIR": str(root / "user-fonts")})
+        check("font recovery repairs truncated copy without downloading",
+              result.returncode == 0 and broken.stat().st_size == names[broken.name],
+              result.stdout + result.stderr)
+        check("font recovery restores all missing copies",
+              all((target / name).is_file() and (target / name).stat().st_size >= size
+                  for name, size in names.items()))
+        check("font recovery preserves healthy copy despite invalid source",
+              healthy.stat().st_mtime_ns == before)
+
+
 def test_font_probe_rejects_empty_and_truncated_bundles() -> None:
     import optional_deps as optional_deps_mod
 

@@ -35,6 +35,31 @@ def test_math_render_finds_standard_delimiters_only_in_text() -> None:
           not issues, str(issues))
 
 
+def test_math_parser_offsets_follow_htmlparser_newlines() -> None:
+    import math_render as math_mod
+    from math_render import _latex_spans, check_latex_html
+
+    for separator in ("\u2028", "\u2029", "\u0085", "\r", "\r\n", "\n"):
+        source = f"<p>alpha{separator}beta</p>\n" + r"<p>\(x\)</p>"
+        spans, issues = _latex_spans(source)
+        check(f"math offsets preserve formula after {separator!r}",
+              not issues and len(spans) == 1
+              and source[spans[0].start:spans[0].end] == r"\(x\)"
+              and spans[0].tex == "x", repr(spans))
+        check(f"math checker catches raw formula after {separator!r}",
+              bool(check_latex_html(source)))
+        original_renderer = math_mod._render_svg
+        try:
+            math_mod._render_svg = lambda formulas: ["<svg></svg>" for _ in formulas]
+            rendered = math_mod.render_latex_in_html(source)
+        finally:
+            math_mod._render_svg = original_renderer
+        check(f"math replacement preserves surrounding HTML after {separator!r}",
+              rendered.startswith(f"<p>alpha{separator}beta</p>\n<p>")
+              and rendered.endswith("</p>") and "latex-inline-svg" in rendered
+              and r"\(x\)" not in rendered, repr(rendered))
+
+
 def test_math_check_rejects_raw_unmatched_and_legacy_sources() -> None:
     from math_render import check_latex_html
 
