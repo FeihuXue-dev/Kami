@@ -6,7 +6,7 @@
       "type": "skill-md",
       "description": "Use when a user asks for a finished document whose appearance matters: a resume, one-pager, letter, portfolio, long report, slide deck, equity report, changelog, or a landing page. Kami fills a constrained parchment template and exports HTML to PDF, PNG, or editable PPTX, then verifies the result with deterministic and perceptual checks. Skip it when the user only wants the text.",
       "url": "/SKILL.md",
-      "digest": "sha256:4ef2d22fa282af5e524be8733666443578eb4b430f8be659dafe7aad44302892",
+      "digest": "sha256:79c34db95acccd72faf078d26efca2d5f5839e97148de49e16a42d95dd25d339",
       "version": "1.15.0",
       "license": "MIT",
       "homepage": "https://kami.tw93.fun",

@@ -114,7 +114,7 @@ Ask only when two cells genuinely both fit.
 
 | Signal | Document |
 |---|---|
-| Length target unknown | Ask "how many pages" before classifying |
+| Length target unknown | Infer from the content and document type; ask only if the choice materially changes the deliverable, within the question budget |
 | ≤ 1 page + investor / recruiter / exec summary audience | one-pager |
 | ≤ 1 page + formal correspondence (sales, hiring, resignation, memo) | letter |
 | 1.5-2 pages + career narrative + project bullets | resume |
@@ -252,7 +252,7 @@ Values longer than 80 characters are treated as prose you may rephrase; short at
 
 Slides only. Every other doc type skips to Step 2.7.
 
-Load `references/deck-preflight.md` and work it before drafting: path selection (WeasyPrint HTML by default), page size, the six pre-flight questions to ask in one batch, and the slide content rules.
+Load `references/deck-preflight.md` before drafting for path selection (WeasyPrint HTML by default), page size, unresolved delivery choices, and slide content rules. Its intake follows the shared question budget.
 
 ## Step 2.7 · Layout note (transparent, non-blocking)
 
