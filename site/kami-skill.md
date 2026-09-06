@@ -400,12 +400,12 @@ Do not ask the user which format to export. Decide from context:
 | Signal | Output | Why |
 |---|---|---|
 | Any document request | HTML + PDF | PDF is the default deliverable, HTML is the source |
-| Slides / PPT / deck | HTML + PDF + PPTX | Presentations need a projectable format |
+| Slides / PPT / deck | HTML + PDF; add PPTX only when explicitly requested as editable output | PDF is the default presentation format |
 | "分享" / "发朋友圈" / "share" / "post" / "preview" | + PNG | Social platforms and messaging need images |
 | "嵌入" / "插图" / "embed in another doc" | PNG only | Used as material inside other documents |
 | User explicitly says a format | Follow the user | Explicit request overrides auto-selection |
 
-PDF always ships for document templates. Landing pages ship as a ready-to-serve static HTML file. PPTX follows slides. PNG follows sharing context.
+PDF is the default for document templates; an explicit format request takes precedence. Landing pages ship as a ready-to-serve static HTML file. Add PPTX only when the user explicitly needs an editable deck. PNG follows sharing context.
 
 ## Step 5 · Build & verify
 

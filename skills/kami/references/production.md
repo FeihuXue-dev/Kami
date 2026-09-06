@@ -604,8 +604,9 @@ Resume templates use section-title bottom rules and borderless project rows. Do 
 ```bash
 # Preferred: multi-source download script (retries, size validation).
 # Lands fonts in ${XDG_DATA_HOME:-~/.local/share}/fonts/kami (fontconfig-scanned,
-# outside the skill dir), then runs fc-cache. Inside a repo checkout it is a
-# no-op because the committed TTFs already satisfy the templates' relative path.
+# outside the skill dir), then runs fc-cache. A repository checkout first copies
+# missing fonts from the root assets/fonts into the skill's ignored assets/fonts;
+# downloads are needed only when usable fonts remain missing.
 bash scripts/ensure-fonts.sh
 
 # Or put .ttf alongside the HTML
