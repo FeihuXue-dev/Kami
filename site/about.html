@@ -47,7 +47,7 @@
       </span>
     </div>
     <h1>About</h1>
-    <p class="tagline">Kami is a constraint-based design system for documents that an AI agent writes and a person actually reads.</p>
+    <p class="tagline">Kami gives AI agents templates and layout rules for documents and landing pages.</p>
     <nav class="doc-nav" aria-label="Site sections">
       <a href="./developers">Developers</a>
       <a href="./about" aria-current="page">About</a>
@@ -60,21 +60,21 @@
   <section class="prose">
     <div class="section-head">
       <p class="section-num">01 · What it is</p>
-      <h2 class="section-title">A design system, not a template gallery</h2>
+      <h2 class="section-title">Templates and layout rules</h2>
     </div>
-    <p>Language models write well and lay out badly. Ask one for a resume and the text is usually fine while the page is not: mixed accent colors, synthetic bold, hard drop shadows, a heading that is three sizes away from its body. Kami exists to remove those decisions from the model. It ships a fixed constraint set, a warm parchment canvas at <code>#f5f4ed</code>, a single ink-blue accent at <code>#1B365D</code>, serif-led hierarchy, and editorial whitespace, and it holds that set across every document type it produces.</p>
+    <p>Kami uses a warm parchment background (<code>#f5f4ed</code>), ink-blue accents (<code>#1B365D</code>), serif fonts, and consistent spacing. These defaults help keep headings, text, tables, and diagrams readable across document types.</p>
     <p>Documents render through HTML to PDF or PNG, while slide decks also have an editable PPTX path. Eight document templates cover the common cases: one-pager, letter, long document, portfolio, resume, slides, equity report, and changelog. Eighteen inline SVG diagram types cover the pictures those documents need, from architecture and flowchart to candlestick and Venn. A separate landing-page template applies the same restraint to a product page.</p>
-    <p>Because the constraints are fixed, the interesting work moves to content quality and verification. Kami ships nine JSON content schemas and a set of checks that look for the failures agents actually produce: unfilled placeholders, markdown syntax leaking into the render, a line orphaned at a page break, a page that ends a third empty, a deck where six slides in a row share one layout.</p>
+    <p>Kami also checks content and layout. Kami ships nine JSON content schemas and a set of checks that look for the failures agents actually produce: unfilled placeholders, markdown syntax leaking into the render, a line orphaned at a page break, a page that ends a third empty, a deck where six slides in a row share one layout.</p>
   </section>
 
   <section class="prose">
     <div class="section-head">
       <p class="section-num">02 · What it is not</p>
-      <h2 class="section-title">Deliberate omissions</h2>
+      <h2 class="section-title">Customization and scope</h2>
     </div>
     <p>Kami is not a hosted service. There is no Kami account, no API key, no server that receives your documents. The skill installs into your agent and runs on your machine; the only thing this domain serves is a static site and a set of public metadata files.</p>
-    <p>It is also not a theme engine. There is no second accent color, no dark mode, no per-document palette. Consistency is the feature, and options would dilute it. If a document needs a different visual language, it needs a different system.</p>
-    <p>Finally, it is not a writing tool. Kami will not decide what your resume should claim or what your report should conclude. It sets the page so that a good decision reads as one.</p>
+    <p>Kami provides a default style you can adapt to your brand. Share your colors, fonts, and layout preferences, or save them in a brand profile. The current request takes priority over those defaults.</p>
+    <p>Kami includes writing guidance, but claims and conclusions must come from your source material. Missing evidence stays marked for review.</p>
   </section>
 
   <section class="prose">
@@ -82,9 +82,9 @@
       <p class="section-num">03 · Who maintains it</p>
       <h2 class="section-title">One maintainer, MIT licensed</h2>
     </div>
-    <p>Kami is built and maintained by <a href="https://tw93.fun" target="_blank" rel="noopener">Tw93</a>, an independent developer. The source, including every template, script, and the skill definition itself, lives at <a href="https://github.com/tw93/kami" target="_blank" rel="noopener">github.com/tw93/kami</a> under the MIT license. Use it commercially, fork it, or lift a single template out of it; attribution is welcome and not required.</p>
-    <p>Releases are tagged in the repository and published as a <code>kami.zip</code> asset for Claude Desktop, alongside the Claude Code and Codex plugin marketplaces. The homepage carries the current version. Interface, template registry, and public facts are cross-checked in CI, so the version on the site, in the plugin manifests, and in the skill package cannot drift apart.</p>
-    <p>The site is published in English, Simplified Chinese, Traditional Chinese, Japanese, and Korean, each with its own serif and its own typographic tuning rather than one font stretched across five scripts.</p>
+    <p>Kami is built and maintained by <a href="https://tw93.fun" target="_blank" rel="noopener">Tw93</a>, an independent developer. The source, including every template, script, and the skill definition itself, lives at <a href="https://github.com/tw93/kami" target="_blank" rel="noopener">github.com/tw93/kami</a> under the MIT license. Use it commercially, fork it, or lift a single template out of it; keep the license notice when redistributing the code or templates. Font licenses apply separately.</p>
+    <p>Releases are tagged in the repository and published as a <code>kami.zip</code> asset for Claude Desktop, alongside the Claude Code and Codex plugin marketplaces. The homepage carries the current version. Interface, template registry, and public facts are cross-checked in CI, to catch version mismatches between the site, plugin manifests, and skill package.</p>
+    <p>The homepage is available in English, Simplified Chinese, Traditional Chinese, Japanese, and Korean. Fonts and spacing are adjusted for each language.</p>
   </section>
 
   <footer class="footer">

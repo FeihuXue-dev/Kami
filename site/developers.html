@@ -50,7 +50,7 @@
       </span>
     </div>
     <h1>Developers</h1>
-    <p class="tagline">Everything an agent needs to drive Kami: one local MCP server, nine content schemas, and a set of deterministic checks that decide whether a document is finished.</p>
+    <p class="tagline">Use the local MCP server, nine content schemas, and CLI checks to render and review documents.</p>
     <nav class="doc-nav" aria-label="Site sections">
       <a href="./developers" aria-current="page">Developers</a>
       <a href="./about">About</a>
@@ -65,8 +65,8 @@
       <p class="section-num">01 · Surface</p>
       <h2 class="section-title">There is no hosted Kami API</h2>
     </div>
-    <p>Kami is a skill and a template system, not a service. It installs into the agent that uses it and runs on that machine: no account, no API key, no rate limit, no request that leaves the host. There is no REST or GraphQL endpoint to call, and this site publishes no authenticated surface, so nothing here needs OAuth discovery or a token exchange.</p>
-    <p>The integration surface is therefore local: an MCP server for tool calls, JSON content schemas for structure, and CLI checks for verification. The static files listed at the bottom of this page are the machine-readable index of all of it, and they are generated from the same registry the templates use, so they cannot drift from what ships.</p>
+    <p>Kami installs into an AI agent and runs in that environment. There is no hosted Kami API, account, or API key. Update checks and remote resources may use the network; see the privacy page for details.</p>
+    <p>The integration surface is therefore local: an MCP server for tool calls, JSON content schemas for structure, and CLI checks for verification. The static files listed at the bottom of this page are the machine-readable index of all of it, and they are generated from the same registry the templates use, with generation checks to catch drift.</p>
   </section>
 
   <section class="prose">
@@ -116,13 +116,13 @@ claude mcp add kami -- python3 &lt;checkout&gt;/skills/kami/scripts/mcp_server.p
     <p>Nine schemas live under <code>references/schemas/</code>: changelog, equity-report, landing-page, letter, long-doc, one-pager, portfolio, resume, slides. A new <code>content.json</code> also carries a <code>brief</code> with audience, job, output contract, target, preserve boundary, evidence, and acceptance checks; older IR files remain valid. Validate the content object before layout, then check how much of it actually reached the page:</p>
 <pre class="code code-wrap">python3 scripts/build.py --check-content content.json
 python3 scripts/build.py --check-content content.json filled.html</pre>
-    <p>The second form reports coverage: fields that exist in the content object but never made it into the document are the most common failure in agent-generated layouts, and they are invisible to a human skim.</p>
+    <p>The second form reports coverage: fields that exist in the content object but never made it into the document are the most common failure in agent-generated layouts, and can be easy to miss in a quick review.</p>
   </section>
 
   <section class="prose">
     <div class="section-head">
       <p class="section-num">05 · Verification</p>
-      <h2 class="section-title">Checks that decide "done"</h2>
+      <h2 class="section-title">Document checks</h2>
     </div>
     <ul>
       <li><code>--check-placeholders</code> - unfilled template text still in the document.</li>
@@ -140,7 +140,7 @@ python3 scripts/build.py --check-content content.json filled.html</pre>
     <div class="section-head">
       <p class="section-num">06 · Catalog</p>
       <h2 class="section-title">Machine-readable files</h2>
-      <p class="section-lede">Every file below is static, public, and generated from the template registry.</p>
+      <p class="section-lede">These public files describe Kami for agents and search engines. Discovery files and catalog feeds are generated from the source; prose pages are maintained alongside them.</p>
     </div>
     <ul>
       <li><a href="./llms.txt">/llms.txt</a> - product summary, install commands, and when an agent should reach for Kami.</li>

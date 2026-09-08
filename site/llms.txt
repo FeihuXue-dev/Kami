@@ -1,6 +1,6 @@
 # Kami
 
-> A warm parchment design system for AI-assisted professional documents. One accent color, serif-led hierarchy, and editorial whitespace.
+> A warm parchment design system for AI-assisted professional documents. One accent color, serif fonts and clear heading levels, and consistent spacing.
 
 ## Author
 - Name: Tw93
@@ -9,7 +9,7 @@
 
 
 ## What is Kami
-Kami is a layout design system for the AI era. Give Claude (or any LLM) a brief, and it produces polished documents: one-pagers, resumes, portfolios, slides, long docs, letters, equity reports, and changelogs. The system uses a warm parchment canvas (#f5f4ed), ink-blue accent (#1B365D), and Charter/TsangerJinKai serif fonts. Parchment is the default canvas; an opt-in white-paper variant renders any document on a white background for home or office printers while keeping the warmth in cards and tables.
+Kami gives AI agents templates and layout rules for documents and landing pages. It includes one-pagers, resumes, portfolios, slides, long documents, letters, equity reports, and changelogs. Defaults include a warm parchment background (#f5f4ed), ink-blue accents (#1B365D), and Charter/TsangerJinKai serif fonts. A white-background option is available for printing.
 
 Kami installs into the agent that uses it and runs on that machine. There is no hosted Kami API, no account, and no API key: the integration surface is a local MCP server, JSON content schemas, and CLI checks.
 

@@ -1,6 +1,6 @@
 # Contact Kami
 
-One maintainer, one queue. GitHub is the fastest way in, and a reproducible report is the fastest way through.
+Use GitHub for bugs, questions, and template requests. Include the details below so I can reproduce the problem.
 
 HTML version: <https://kami.tw93.fun/contact>
 
@@ -11,18 +11,18 @@ HTML version: <https://kami.tw93.fun/contact>
 - **Anything that should not be public**, including a security report: email the maintainer at <hitw93@gmail.com>, the same address published in the plugin manifests.
 - **Everything else**: [@HiTw93](https://x.com/HiTw93) on X, or the maintainer's site at <https://tw93.fun>.
 
-Kami is maintained by one person alongside other work, so replies are best-effort rather than guaranteed within any window. There is no paid support tier and no contract to sign; the trade is that everything is MIT licensed and you can fix it yourself if waiting does not suit.
+I maintain Kami alongside other projects, so replies may take time. There is no paid support tier.
 
 ## What to include in a report
 
-Most layout reports stall on missing context. These four lines usually unblock a fix.
+Include these details with a layout report.
 
 - The template name, for example `resume-en` or `slides-weasy`, and the Kami version from the homepage badge or `VERSION`.
 - How it was invoked: the Claude Code plugin, the Codex plugin, a Claude Desktop upload, the MCP server, or a direct `scripts/build.py` run.
-- The rendered artifact, a PDF or a page PNG, rather than a description of it. Layout problems are visual and a screenshot settles most of them immediately.
+- The rendered artifact, a PDF or a page PNG, rather than a description of it. A screenshot helps show where the layout went wrong.
 - The output of the relevant check, for example `python3 scripts/build.py --check-content content.json filled.html`, if the document verified clean but still looks wrong.
 
-For rendering failures, the exact error text matters: WeasyPrint, pypdf, and PyMuPDF are optional dependencies, and a missing one surfaces as an install hint rather than a crash. Pasting that hint is usually the whole diagnosis.
+For rendering failures, the exact error text matters: WeasyPrint, pypdf, and PyMuPDF are optional dependencies, and a missing one surfaces as an install hint rather than a crash. Include the full error message and any install hint.
 
 ## Elsewhere
 

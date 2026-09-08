@@ -147,7 +147,7 @@ def build_codex_plugin(version: str, brand_color: str) -> dict:
             "displayName": "Kami",
             "shortDescription": "Typeset polished documents and landing pages",
             "longDescription": (
-                "Kami packages a warm parchment design system for Codex. Use it "
+                "Kami provides document templates and layout rules for Codex. Use it "
                 "to turn briefs and raw material into resumes, one-pagers, long "
                 "documents, letters, portfolios, slide decks, equity reports, "
                 "changelogs, and product landing pages."
@@ -240,8 +240,8 @@ def build_claude_marketplace(version: str) -> dict:
 SKILL_WHEN_TO_USE = (
     "Use when a user asks for a finished document whose appearance matters: a "
     "resume, one-pager, letter, portfolio, long report, slide deck, equity "
-    "report, changelog, or a landing page. Kami fills a constrained parchment "
-    "template and exports HTML to PDF, PNG, or editable PPTX, then verifies "
+    "report, changelog, or a landing page. Kami fills an HTML "
+    "template and exports PDF or PNG, with editable PPTX for slides, then reviews "
     "the result with deterministic and perceptual checks. Skip it when the "
     "user only wants the text."
 )

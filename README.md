@@ -10,15 +10,15 @@
 
 ## Why
 
-Kami (紙, かみ) means paper in Japanese: the surface where a finished idea lands. AI can produce documents better than most humans do manually. The missing piece is not capability but constraint: without a design system, every session drifts into generic gray and inconsistent layouts.
+Kami gives AI agents templates and layout rules for documents and landing pages. Create PDFs and PNGs, or export slides as editable PowerPoint files.
 
-Kami fills that gap: one constraint language, eight document templates plus a landing-page system, simple enough for agents to run reliably, strict enough that every output is something you actually want to ship.
+Kami (紙, かみ) means paper in Japanese. It includes eight document templates, a landing-page system, and checks for content and layout.
 
 Part of a trilogy: [Kaku](https://github.com/tw93/Kaku) (書く) writes code, [Waza](https://github.com/tw93/Waza) (技) drills habits, [Kami](https://github.com/tw93/Kami) (紙) delivers documents.
 
 ## Showcase
 
-Real PDFs from one constraint set, across templates and languages. Click any preview to open it.
+Sample PDFs in several formats and languages. Click any preview to open it.
 
 <table>
 <tr>
@@ -97,7 +97,7 @@ Kami also runs a quiet version check at most once a day and tells you in chat wh
 
 ## Use
 
-The skill auto-triggers from natural requests, no slash command needed. Optimized for English and Chinese; Japanese and Korean are supported via best-effort CJK paths with visual QA before delivery.
+The skill auto-triggers from natural requests, no slash command needed. Optimized for English and Chinese; Japanese and Korean are supported via language-specific font fallbacks and layout adjustments, with output checked individually.
 
 Example prompts by language:
 
@@ -110,19 +110,19 @@ Example prompts by language:
 
 Create `~/.config/kami/brand.md` to persist identity, brand, defaults, and writing habits. See [brand.example.md](skills/kami/references/brand.example.md) for a full template.
 
-The file has YAML frontmatter for structured fields like name, role, email, brand color, language, page size, and tone, plus a Markdown body for freeform notes. Kami treats it as the lowest-resolution context: applied only when the current request is ambiguous, and always overridable by what the specific document needs. The goal is to feel familiar across your work without making every output look the same.
+The file has YAML frontmatter for structured fields like name, role, email, brand color, language, page size, and tone, plus a Markdown body for freeform notes. Kami uses these settings where the current request leaves a choice open; explicit instructions always take priority. Use it to avoid repeating your preferences for each document.
 
 ## Design
 
-Warm parchment canvas `#f5f4ed`, ink blue `#1B365D` as the sole accent, serif carries hierarchy, no hard shadows or flashy palettes. Not a UI framework; a constraint system for printed matter. Documents should read as composed pages, not dashboards.
+The defaults are a warm parchment background (`#f5f4ed`), ink-blue accents (`#1B365D`), and serif fonts. Templates use type size and spacing to separate titles, body text, and notes. You can adjust the defaults for your brand.
 
 - **Templates.** Eight document templates: One-Pager, Long Doc, Letter, Portfolio, Resume, Slides, Equity Report, and Changelog, plus a Landing Page system, in EN, CN, and KO.
 - **Diagrams.** Eighteen inline SVG types, including a report-scale architecture board. Sequence, class, and ER can be authored from Mermaid text: [beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid) renders the SVG and `scripts/mermaid_normalize.py` re-themes it to the Kami palette and makes it WeasyPrint-safe, no Node bundled.
 - **Slides.** Three rendering paths: WeasyPrint HTML to PDF by default, python-pptx for editable PPTX on request, and a Marp variant in `assets/templates/marp/` for Markdown-first decks.
 - **Code.** Pygments-based syntax highlighting when `Pygments` is installed; without it, PDFs still render and code stays monochrome.
-- **Verification.** Deterministic quality gates: per-type content schemas validate structure before layout, an optional structured brief records the artifact's target and acceptance boundary, a coverage check confirms every fact survives into the filled page, and a visual pass exports page images against a fixed review checklist.
+- **Verification.** Content schemas check structure before layout; coverage checks look for content missing from the filled page. A structured brief records the audience and requirements, and page images support the final visual review.
 - **MCP.** A zero-dependency MCP server (`skills/kami/scripts/mcp_server.py`) exposes capability diagnosis, render, structured check, and screenshot tools, so any MCP-capable agent can drive Kami as an engine without loading the full skill prompt. Render only trusted local HTML: referenced file, HTTP, and HTTPS resources load with the MCP process's permissions.
-- **Print.** Parchment is the default canvas; an opt-in white-paper variant flips any document to a white background for home or office printers, sinking the warmth into cards and tables so the hierarchy still reads. The [one-page Kami intro](site/assets/demos/demo-kami-print.pdf) (Chinese) is rendered with this variant; recipe in [production.md](skills/kami/references/production.md).
+- **Print.** Parchment is the default canvas; an opt-in white-paper variant flips any document to a white background for home or office printers, keeping warm backgrounds in cards and tables. The [one-page Kami intro](site/assets/demos/demo-kami-print.pdf) (Chinese) is rendered with this variant; recipe in [production.md](skills/kami/references/production.md).
 
 Kami picks the right variant based on the language you write in.
 
@@ -132,7 +132,7 @@ Full spec: [design.md](skills/kami/references/design.md). Cheatsheet: [CHEATSHEE
 
 ## Beyond Documents
 
-One constraint set, applied past the page: it lays out deployable websites and briefs AI image renderers, so both come back in the Kami look.
+The same layout rules also work for landing pages and prompts for AI image tools.
 
 <table>
 <tr>
@@ -171,13 +171,13 @@ Redraw this as a clean editorial diagram. Background: warm parchment (#f5f4ed), 
 
 I like investing in US equities and ask Claude to write research reports all the time. Every output landed in the same default-doc look: gray, flat, a different layout each session. The structure was hard to scan, the formatting felt dated, and nothing about the page made me want to keep reading. So I started fixing the typography, the palette, the spacing, one rule at a time, until the report became a page I actually enjoyed.
 
-Later I needed to present "The Agent You Don't Know: Principles, Architecture and Engineering Practice." I already had the document and didn't want to build slides from scratch, so I used Claude Design to lay it out in my own style, tweaked it round after round, and eventually got it to a place I was happy with. That process added inline SVG charts, a unified warm palette, and a tighter editorial rhythm. It kept growing until it covered every document I regularly ship, so I kept abstracting the process, and it became kami: one quiet design system I can hand to any agent and trust the output.
+Later I needed to present "The Agent You Don't Know: Principles, Architecture and Engineering Practice." I already had the document and didn't want to build slides from scratch, so I used Claude Design to lay it out in my own style, tweaked it round after round, and eventually got it to a place I was happy with. That process added inline SVG charts, a unified warm palette, and a tighter editorial rhythm. It kept growing until it covered every document I regularly ship, so I collected the templates and rules into Kami.
 
 ## Support
 
 - The most direct way to support me is getting [Mole for Mac](https://mole.fit), my paid Mac cleanup app.
 - If Kami helped you, give it a star, [share it](https://twitter.com/intent/tweet?url=https://github.com/tw93/kami&text=Kami%20-%20A%20quiet%20design%20system%20for%20professional%20documents.), or open an issue or PR.
-- I have two cats, TangYuan and Coke. If you think kami delights your life, you can feed them <a href="https://cats.tw93.fun?name=Kami" target="_blank">canned food 🥩</a>.
+- I have two cats, TangYuan and Coke. If Kami has been useful, you can feed them <a href="https://cats.tw93.fun?name=Kami" target="_blank">canned food 🥩</a>.
 
 <details>
 <summary>These lovely people already did 🐱</summary>

@@ -1,14 +1,14 @@
 # Kami for developers and agents
 
-Everything an agent needs to drive Kami: one local MCP server, nine content schemas, and a set of deterministic checks that decide whether a document is finished.
+Use the local MCP server, nine content schemas, and CLI checks to render and review documents.
 
 HTML version: <https://kami.tw93.fun/developers>
 
 ## There is no hosted Kami API
 
-Kami is a skill and a template system, not a service. It installs into the agent that uses it and runs on that machine: no account, no API key, no rate limit, no request that leaves the host. There is no REST or GraphQL endpoint to call, and this site publishes no authenticated surface, so nothing here needs OAuth discovery or a token exchange.
+Kami installs into an AI agent and runs in that environment. There is no hosted Kami API, account, or API key. Update checks and remote resources may use the network; see the privacy page for details.
 
-The integration surface is local: an MCP server for tool calls, JSON content schemas for structure, and CLI checks for verification. The static files listed at the end of this page are the machine-readable index of all of it, generated from the same registry the templates use so they cannot drift from what ships.
+The integration surface is local: an MCP server for tool calls, JSON content schemas for structure, and CLI checks for verification. The static files listed at the end of this page are the machine-readable index of all of it, with generated discovery files and catalog feeds checked against the source.
 
 ## Install
 
@@ -53,7 +53,7 @@ python3 scripts/build.py --check-content content.json
 python3 scripts/build.py --check-content content.json filled.html
 ```
 
-The second form reports coverage: fields that exist in the content object but never reached the document. That is the most common failure in agent-generated layouts and it is invisible to a human skim.
+The second form reports coverage: fields that exist in the content object but never reached the document. Missing content can be easy to overlook in a quick review.
 
 ## Checks
 

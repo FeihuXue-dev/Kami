@@ -23,7 +23,7 @@
   "interface": {
     "displayName": "Kami",
     "shortDescription": "Typeset polished documents and landing pages",
-    "longDescription": "Kami packages a warm parchment design system for Codex. Use it to turn briefs and raw material into resumes, one-pagers, long documents, letters, portfolios, slide decks, equity reports, changelogs, and product landing pages.",
+    "longDescription": "Kami provides document templates and layout rules for Codex. Use it to turn briefs and raw material into resumes, one-pagers, long documents, letters, portfolios, slide decks, equity reports, changelogs, and product landing pages.",
     "developerName": "Tw93",
     "category": "Productivity",
     "capabilities": [

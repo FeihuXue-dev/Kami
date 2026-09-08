@@ -960,3 +960,21 @@ def test_coverage_caps_adversarial_reports() -> None:
           and "issue limit" in missing[-1], f"issues={len(missing)}")
     check("coverage caps the number of atomic values",
           len(oversized) == 1 and "too many atomic values" in oversized[0], str(oversized[-2:]))
+
+
+def test_landing_copy_can_omit_redundant_captions_and_subtitles() -> None:
+    from content import validate_node
+    from shared import SCHEMAS_DIR
+    schema = json.loads((SCHEMAS_DIR / "landing-page.json").read_text())
+    gallery = schema["properties"]["gallery"]["items"]
+    feature = schema["properties"]["features"]["items"]
+    image = {"image": "images/product.png"}
+    item = {"name": "Export", "description": "Save the document as a PDF or PNG file."}
+    check("landing copy may omit redundant captions and subtitles",
+          validate_node(image, gallery) == [] and validate_node(item, feature) == [])
+    check("landing copy still requires an image and a feature description",
+          bool(validate_node({}, gallery))
+          and bool(validate_node({"name": "Export"}, feature)))
+    check("optional landing copy is validated when supplied",
+          bool(validate_node({**image, "caption": 42}, gallery))
+          and bool(validate_node({**item, "subtitle": 42}, feature)))

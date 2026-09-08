@@ -204,6 +204,12 @@ python3 scripts/mermaid_normalize.py raw.svg -o clean.svg
   screenshot verification» subsection that closes Section 12 (screenshot at 375px /
   1280px per locale, objective line-widow scan) before shipping.
 - Content changes should avoid CSS churn unless layout behavior is part of the task.
+- Public copy states the product function before design terminology. Write each locale
+  naturally, preserve approved taglines and personal stories, and keep claims identical
+  across HTML, Markdown, metadata, and FAQ JSON-LD. Writing rules and schema comments
+  must not require poetic captions, invented benefits, numeric filler, or rewrite quotas.
+  Distinguish local document processing from update checks, remote assets, and the AI
+  provider’s data handling.
 - Brand profile support is optional context. Keep public examples in `references/`; do
   not hard-code a maintainer's private local profile.
 - Demo, reference-example, and handoff content distilled from a maintainer's private

@@ -12,7 +12,7 @@ screenshots. Everyday template, script, and site work does not need it.
 - Title shape: `V<x.y.z> <Two-Word Codename>`, for example `V1.7.2 Cleaner Resumes`.
 - Body: centered logo block + `### Changelog` (English numbered list) + `### 更新日志`
   (Chinese numbered list) + the closing tagline line.
-- Bilingual and one-to-one: 3 to 8 items, one sentence each, English item N maps to
+- Bilingual and one-to-one: one sentence per item, with the count determined by distinct user-visible changes, English item N maps to
   Chinese item N. Fewer, denser items beat padding the list: group the commits by the
   capability a user gains, and drop anything that shipped to the site rather than into
   the package, since a site change is already live and needs no upgrade.

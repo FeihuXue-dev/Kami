@@ -47,7 +47,7 @@
       </span>
     </div>
     <h1>Contact</h1>
-    <p class="tagline">One maintainer, one queue. GitHub is the fastest way in, and a reproducible report is the fastest way through.</p>
+    <p class="tagline">Use GitHub for bugs, questions, and template requests. Include the details below so I can reproduce the problem.</p>
     <nav class="doc-nav" aria-label="Site sections">
       <a href="./developers">Developers</a>
       <a href="./about">About</a>
@@ -68,22 +68,22 @@
       <li><strong>Anything that should not be public</strong>, including a security report: email the maintainer at <a href="mailto:hitw93@gmail.com">hitw93@gmail.com</a>, the same address published in the plugin manifests.</li>
       <li><strong>Everything else</strong>: <a href="https://x.com/HiTw93" target="_blank" rel="noopener">@HiTw93</a> on X, or the maintainer's site at <a href="https://tw93.fun" target="_blank" rel="noopener">tw93.fun</a>.</li>
     </ul>
-    <p>Kami is maintained by one person alongside other work, so replies are best-effort rather than guaranteed within any window. There is no paid support tier and no contract to sign; the trade is that everything is MIT licensed and you can fix it yourself if waiting does not suit.</p>
+    <p>I maintain Kami alongside other projects, so replies may take time. There is no paid support tier.</p>
   </section>
 
   <section class="prose">
     <div class="section-head">
       <p class="section-num">02 · Reports</p>
       <h2 class="section-title">What to include</h2>
-      <p class="section-lede">Most layout reports stall on missing context. These four lines usually unblock a fix.</p>
+      <p class="section-lede">Include these details with a layout report.</p>
     </div>
     <ul>
       <li>The template name, for example <code>resume-en</code> or <code>slides-weasy</code>, and the Kami version from the homepage badge or <code>VERSION</code>.</li>
       <li>How it was invoked: the Claude Code plugin, the Codex plugin, a Claude Desktop upload, the MCP server, or a direct <code>scripts/build.py</code> run.</li>
-      <li>The rendered artifact, a PDF or a page PNG, rather than a description of it. Layout problems are visual and a screenshot settles most of them immediately.</li>
+      <li>The rendered artifact, a PDF or a page PNG, rather than a description of it. A screenshot helps show where the layout went wrong.</li>
       <li>The output of the relevant check, for example <code>python3 scripts/build.py --check-content content.json filled.html</code>, if the document verified clean but still looks wrong.</li>
     </ul>
-    <p>For rendering failures, the exact error text matters: WeasyPrint, pypdf, and PyMuPDF are optional dependencies, and a missing one surfaces as an install hint rather than a crash. Pasting that hint is usually the whole diagnosis.</p>
+    <p>For rendering failures, the exact error text matters: WeasyPrint, pypdf, and PyMuPDF are optional dependencies, and a missing one surfaces as an install hint rather than a crash. Include the full error message and any install hint.</p>
   </section>
 
   <footer class="footer">

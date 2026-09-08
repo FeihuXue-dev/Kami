@@ -1,9 +1,9 @@
 # Kami
 
-Kami is a document layout design system for the AI era. Give an AI agent a brief, and Kami turns it into a finished document: a one-pager, resume, portfolio, slide deck, long report, letter, equity report, or changelog. Documents render through HTML to PDF or PNG; slide decks also have an editable PPTX path.
+Kami gives AI agents templates and layout rules for documents and landing pages. It includes one-pagers, resumes, portfolios, slide decks, long reports, letters, equity reports, and changelogs. Documents export to PDF or PNG; slides also support editable PPTX.
 
 
-The system is a fixed constraint set rather than a theme picker: a warm parchment canvas (`#f5f4ed`), a single ink-blue accent (`#1B365D`), serif-led hierarchy (Charter for Latin, TsangerJinKai for Chinese), and editorial whitespace. An opt-in white-paper variant renders the same document on a white background for home and office printers while keeping the warmth in cards and tables.
+The default style uses a warm parchment canvas (`#f5f4ed`), a single ink-blue accent (`#1B365D`), serif fonts and clear heading levels (Charter for Latin, TsangerJinKai for Chinese), and consistent spacing. An opt-in white-paper variant renders the same document on a white background for home and office printers while keeping warm backgrounds in cards and tables.
 
 Kami runs entirely on the machine that installs it. There is no hosted Kami API, no account, and no key to obtain. Everything below is a local command or a static file on this site.
 
