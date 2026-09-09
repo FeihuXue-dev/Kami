@@ -553,7 +553,7 @@ For displaying pseudocode or code snippets in slides. More structured than a pla
 
 ### Syntax Highlighting
 
-Code blocks with `class="language-*"` on the `<code>` element get Pygments-based highlighting at build time. The palette uses existing tokens only:
+Code blocks with `class="language-*"` on the `<code>` element get Shiki-based static highlighting at build time. The bundled Kami Shiki theme uses existing tokens only:
 
 | Token | Hex | Token var |
 |---|---|---|
@@ -569,7 +569,7 @@ Code blocks with `class="language-*"` on the `<code>` element get Pygments-based
     return transform(data)</code></pre>
 ```
 
-Blocks without `class="language-*"` stay monochrome. Requires `pip install Pygments`; without it, blocks pass through unstyled.
+Blocks without `class="language-*"` stay monochrome. Run `bash scripts/ensure_shiki.sh` before rendering; without the cached Shiki runtime, blocks pass through unstyled.
 
 ### Glance Grid
 
@@ -1229,7 +1229,7 @@ Content rules in `references/writing.md` «Pricing rules»: benefits lead, the p
 - Font: `--mono` 13.5px, tabular-nums, line-height 1.55; reduce to 11.5px at the phone breakpoint (480px) so wide lines stay legible without horizontal scroll. `code { min-width: max-content }` lets long lines scroll instead of wrapping.
 - Inline `code` is an annotation, not a focal tag: `--inline-code-bg` background, dark-warm text, no border, 2px radius, minimal horizontal padding, `0.9em`.
 
-Screen code blocks may use a dark surface (`--shot-bg: #141318`, the same frame as the gallery) instead of ivory. Highlight at build time with zero runtime JS: a script bakes static `<span class>` markup (e.g. Pygments) and is idempotent, so re-running it after any doc edit refreshes the output; merge adjacent same-class spans so the markup stays small. Plain code stays the source of truth; the spans are generated, never hand-authored. Keep the token palette restrained on the dark surface:
+Screen code blocks may use a dark surface (`--shot-bg: #141318`, the same frame as the gallery) instead of ivory. Highlight at build time with zero runtime JS: Shiki bakes static `<span>` markup and is idempotent, so re-running it after any doc edit refreshes the output; keep the generated markup compact and never hand-author token spans. Plain code stays the source of truth; the spans are generated, never hand-authored. Keep the token palette restrained on the dark surface:
 
 | Token | Hex | Role |
 |---|---|---|

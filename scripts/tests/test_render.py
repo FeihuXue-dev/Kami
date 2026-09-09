@@ -3,10 +3,8 @@ from __future__ import annotations
 
 from support import check, silently, skip, write_temp_html
 
-import builtins
 import contextlib
 import highlight as highlight_mod
-import importlib.util
 import io
 import subprocess
 import tempfile
@@ -427,20 +425,23 @@ def test_verify_target_requires_exactly_two_resume_pages() -> None:
 def test_highlight_with_language() -> None:
     html = '<pre><code class="language-python">def foo():\n    pass</code></pre>'
     out = highlight_code_blocks(html)
-    if importlib.util.find_spec("pygments") is None:
-        check("highlight skips styled output when Pygments is absent",
+    if not highlight_mod.shiki_available():
+        check("highlight skips styled output when Shiki is absent",
               out == html,
               f"out differs: {out[:200]}")
         return
 
-    check("highlight adds style spans to language-tagged block",
-          "<span" in out and "style=" in out,
+    check("Shiki adds token spans to language-tagged block",
+          "<span" in out and "style=" in out and "shiki-rendered" in out,
           f"out: {out[:200]}")
-    check("highlight avoids synthetic bold",
+    check("Shiki avoids synthetic bold",
           "font-weight" not in out.lower(),
           f"out: {out[:200]}")
-    check("highlight preserves pre/code wrapper",
+    check("Shiki preserves a pre/code wrapper",
           "<pre" in out and "</code>" in out)
+    check("Shiki highlighting is idempotent",
+          highlight_code_blocks(out) == out,
+          f"out: {out[:200]}")
 
 
 def test_highlight_without_language() -> None:
@@ -452,8 +453,8 @@ def test_highlight_without_language() -> None:
 
 
 def test_highlight_accepts_valid_class_attribute_variants() -> None:
-    if importlib.util.find_spec("pygments") is None:
-        skip("highlight class attribute variants", "Pygments unavailable", ci_required=True)
+    if not highlight_mod.shiki_available():
+        skip("highlight class attribute variants", "Shiki unavailable", ci_required=True)
         return
 
     cases = [
@@ -463,36 +464,31 @@ def test_highlight_accepts_valid_class_attribute_variants() -> None:
         '<PRE><CODE CLASS="extra language-python">print(1)</CODE></PRE>',
     ]
     outputs = [highlight_code_blocks(html) for html in cases]
-    check("highlight accepts quotes, attribute order, multiple classes, and tag case",
-          all("<span" in output and "style=" in output for output in outputs),
+    check("Shiki accepts quotes, attribute order, multiple classes, and tag case",
+          all("<span" in output and "shiki-rendered" in output for output in outputs),
           str(outputs))
 
 
-def test_highlight_without_pygments_dependency() -> None:
+def test_highlight_without_shiki_dependency() -> None:
     html = '<pre><code class="language-python">def foo():\n    pass</code></pre>'
-    original_import = builtins.__import__
-    original_warned = highlight_mod._WARNED_MISSING_PYGMENTS
-
-    def fake_import(name, *args, **kwargs):
-        if name == "pygments" or name.startswith("pygments."):
-            raise ImportError("blocked for fallback test")
-        return original_import(name, *args, **kwargs)
+    original_available = highlight_mod.shiki_available
+    original_warned = highlight_mod._WARNED_MISSING_SHIKI
 
     try:
-        highlight_mod._WARNED_MISSING_PYGMENTS = False
-        builtins.__import__ = fake_import
+        highlight_mod.shiki_available = lambda: False
+        highlight_mod._WARNED_MISSING_SHIKI = False
         warning = io.StringIO()
         with contextlib.redirect_stderr(warning):
             out = highlight_code_blocks(html)
     finally:
-        builtins.__import__ = original_import
-        highlight_mod._WARNED_MISSING_PYGMENTS = original_warned
+        highlight_mod.shiki_available = original_available
+        highlight_mod._WARNED_MISSING_SHIKI = original_warned
 
-    check("highlight falls back unchanged without Pygments",
+    check("highlight falls back unchanged without Shiki",
           out == html,
           f"out differs: {out[:200]}")
-    check("highlight warns when Pygments is missing",
-          "WARN: Pygments is not installed" in warning.getvalue(),
+    check("highlight warns when Shiki is missing",
+          "WARN: Shiki is not installed" in warning.getvalue(),
           f"warning: {warning.getvalue()}")
 
 

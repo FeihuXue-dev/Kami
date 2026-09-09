@@ -32,6 +32,7 @@ WEASYPRINT_INSTALL_HINT = "pip install weasyprint pypdf --break-system-packages"
 if sys.platform.startswith("linux"):
     WEASYPRINT_INSTALL_HINT = f"{WEASYPRINT_INSTALL_HINT}. {_LINUX_NATIVE_LIBS}"
 PYMUPDF_INSTALL_HINT = "pip install pymupdf --break-system-packages"
+SHIKI_INSTALL_HINT = "bash scripts/ensure_shiki.sh"
 
 
 class MissingDepError(RuntimeError):
@@ -79,6 +80,17 @@ def require_pymupdf():
         raise MissingDepError(
             f"missing PyMuPDF. {PYMUPDF_INSTALL_HINT}"
         ) from exc
+
+
+def require_shiki() -> bool:
+    """Confirm the cached Node Shiki runtime needed for code highlighting."""
+    try:
+        from highlight import shiki_available
+    except ImportError as exc:
+        raise MissingDepError(f"missing Kami Shiki helper. {SHIKI_INSTALL_HINT}") from exc
+    if not shiki_available():
+        raise MissingDepError(f"missing Shiki. Run `{SHIKI_INSTALL_HINT}`")
+    return True
 
 
 def _distribution_version(name: str) -> str | None:
@@ -240,8 +252,8 @@ def doctor_report() -> dict:
             lambda: _probe_module("pptx"), required=False,
         ),
         _probe_dependency(
-            "pygments", "Pygments", "build-time code highlighting",
-            lambda: _probe_module("pygments"), required=False,
+            "shiki", "Shiki", "build-time code highlighting",
+            require_shiki, required=False,
         ),
     ]
     mathjax = probe_mathjax()

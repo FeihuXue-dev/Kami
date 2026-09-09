@@ -204,6 +204,7 @@ python3 scripts/mermaid_normalize.py raw.svg -o clean.svg
   screenshot verification» subsection that closes Section 12 (screenshot at 375px /
   1280px per locale, objective line-widow scan) before shipping.
 - Content changes should avoid CSS churn unless layout behavior is part of the task.
+- In technical documents, every explainable technology must carry its mathematical process, symbol definitions, and formulas in the relevant main-body subsection. A detached appendix may recap material but must never be the only place that explains it.
 - Public copy states the product function before design terminology. Write each locale
   naturally, preserve approved taglines and personal stories, and keep claims identical
   across HTML, Markdown, metadata, and FAQ JSON-LD. Writing rules and schema comments
@@ -278,9 +279,10 @@ Applies when editing `.github/workflows/*.yml` or adding a test with a heavy
 dependency.
 
 - `check.yml` has two jobs. `lint-and-test` runs dependency-light lint, metadata,
-  and package gates. `verify-render` installs `weasyprint` / `pypdf` / `PyMuPDF` /
-  `Pygments`, sets up Node 22 and runs `bash scripts/ensure_mathjax.sh`, then runs
-  the full test suite before template verification. Tests that
+  and package gates. `verify-render` installs `weasyprint` / `pypdf` / `PyMuPDF`,
+  sets up Node 22, then runs `bash skills/kami/scripts/ensure_mathjax.sh` and
+  `bash skills/kami/scripts/ensure_shiki.sh` before the full test suite and template
+  verification. Tests that
   need an optional render dependency use the suite's explicit `SKIP:` counter and
   fail when a CI-required dependency is unavailable; never turn a skip into `OK:`.
 - Validate workflow edits on a feature branch (push, watch the run go green) before

@@ -1,16 +1,19 @@
-"""Lightweight syntax highlighting for Kami HTML templates.
+"""Shiki-based static syntax highlighting for Kami HTML templates.
 
-Scans HTML for <pre><code class="language-*"> blocks and applies
-Pygments-based inline-style highlighting using Kami design tokens.
-Blocks without a language- class pass through unchanged.
+Scans ``<pre><code class="language-*">`` blocks and delegates tokenization to
+Shiki. The resulting HTML contains static token spans and needs no browser
+JavaScript. Blocks without a language class, unsupported languages, and an
+unavailable Shiki cache pass through unchanged.
 """
 from __future__ import annotations
 
 import html as html_mod
+import json
+import os
 import re
+import subprocess
 import sys
-
-from shared import token_value
+from pathlib import Path
 
 CODE_BLOCK_RE = re.compile(
     r'(?P<open><pre\b[^>]*>\s*<code\b[^>]*>)'
@@ -22,82 +25,52 @@ CLASS_ATTR_RE = re.compile(
     r'''(?:^|\s)class\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))''',
     re.IGNORECASE,
 )
-
-_KAMI_PALETTE: dict[str, str] | None = None
-
-
-def _kami_palette() -> dict[str, str]:
-    """Resolve design-token colors lazily.
-
-    Kept out of module scope so importing this module (e.g. by build.py for a
-    command that never highlights code) does not read tokens.json. That keeps
-    the import resilient on a half-installed checkout, matching shared.py's
-    baked-in fallbacks.
-    """
-    global _KAMI_PALETTE
-    if _KAMI_PALETTE is None:
-        _KAMI_PALETTE = {
-            "brand":      token_value("brand"),
-            "stone":      token_value("stone"),
-            "olive":      token_value("olive"),
-            "dark_warm":  token_value("dark-warm"),
-            "near_black": token_value("near-black"),
-        }
-    return _KAMI_PALETTE
+SCRIPT_DIR = Path(__file__).resolve().parent
+SHIKI_RENDERER = SCRIPT_DIR / "shiki_highlight.mjs"
+_WARNED_MISSING_SHIKI = False
 
 
-_WARNED_MISSING_PYGMENTS = False
+def shiki_root() -> Path:
+    """Return the stable Shiki cache root, honoring an explicit override."""
+    explicit = os.environ.get("KAMI_SHIKI_ROOT")
+    if explicit:
+        return Path(explicit).expanduser()
+    # macOS uses a dedicated stable cache because other render setup can alter
+    # XDG_CACHE_HOME for fontconfig during the current process.
+    if sys.platform == "darwin":
+        return Path.home() / ".cache" / "kami" / "shiki"
+    return Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "kami" / "shiki"
 
 
-def _warn_missing_pygments() -> None:
-    global _WARNED_MISSING_PYGMENTS
-    if _WARNED_MISSING_PYGMENTS:
+def shiki_available() -> bool:
+    """Return whether Node can resolve Shiki from the configured cache."""
+    try:
+        probe = subprocess.run(
+            ["node", "-", str(shiki_root())],
+            input=(
+                'const root = process.argv[2];\n'
+                'try { require.resolve("shiki/package.json", { paths: [root] }); '
+                'process.exit(0); } catch (_) { process.exit(1); }\n'
+            ),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        return False
+    return probe.returncode == 0
+
+
+def _warn_missing_shiki() -> None:
+    global _WARNED_MISSING_SHIKI
+    if _WARNED_MISSING_SHIKI:
         return
     print(
-        "WARN: Pygments is not installed; language-tagged code blocks will render monochrome. "
-        "Install with `python3 -m pip install Pygments` to enable syntax highlighting.",
+        "WARN: Shiki is not installed; language-tagged code blocks will render monochrome. "
+        "Run `bash scripts/ensure_shiki.sh` to enable build-time syntax highlighting.",
         file=sys.stderr,
     )
-    _WARNED_MISSING_PYGMENTS = True
-
-
-def _build_kami_style():
-    from pygments.style import Style
-    from pygments.token import (
-        Comment, Keyword, Literal, Name, Number, Operator,
-        Punctuation, String, Token,
-    )
-
-    palette = _kami_palette()
-
-    class KamiStyle(Style):
-        background_color = ""
-        default_style = ""
-        styles = {
-            Token:              "",
-            Comment:            palette["stone"],
-            Comment.Single:     palette["stone"],
-            Comment.Multiline:  palette["stone"],
-            Comment.Preproc:    palette["stone"],
-            Keyword:            palette["brand"],
-            Keyword.Constant:   palette["brand"],
-            Keyword.Namespace:  palette["brand"],
-            Keyword.Type:       palette["brand"],
-            Name.Builtin:       palette["brand"],
-            Name.Function:      palette["near_black"],
-            Name.Class:         palette["near_black"],
-            Name.Decorator:     palette["olive"],
-            String:             palette["olive"],
-            String.Doc:         palette["stone"],
-            Number:             palette["dark_warm"],
-            Number.Float:       palette["dark_warm"],
-            Number.Integer:     palette["dark_warm"],
-            Literal:            palette["dark_warm"],
-            Operator:           "",
-            Punctuation:        "",
-        }
-
-    return KamiStyle
+    _WARNED_MISSING_SHIKI = True
 
 
 def _language_from_open_tag(open_tag: str) -> str | None:
@@ -116,51 +89,68 @@ def _language_from_open_tag(open_tag: str) -> str | None:
     return None
 
 
-def _highlight_block(match: re.Match[str]) -> str:
-    from pygments import highlight as pyg_highlight
-    from pygments.formatters import HtmlFormatter
-    from pygments.lexers import get_lexer_by_name
-
-    open_tag = match.group("open")
-    language = _language_from_open_tag(open_tag)
-    if language is None:
-        return match.group(0)
-    code = match.group("code")
-    close_tag = match.group("close")
-
-    code_text = html_mod.unescape(code)
-
+def _render_with_shiki(blocks: list[dict[str, str]]) -> list[str | None] | None:
+    """Return full highlighted ``<pre>`` fragments, or None on a tool failure."""
+    if not SHIKI_RENDERER.exists() or not shiki_available():
+        return None
     try:
-        lexer = get_lexer_by_name(language, stripall=False)
-    except Exception:
-        return match.group(0)
-
-    formatter = HtmlFormatter(
-        style=_build_kami_style(),
-        noclasses=True,
-        nowrap=True,
-    )
-
-    highlighted = pyg_highlight(code_text, lexer, formatter)
-    return f'{open_tag}{highlighted}{close_tag}'
+        result = subprocess.run(
+            ["node", str(SHIKI_RENDERER), str(shiki_root())],
+            input=json.dumps(blocks, ensure_ascii=False),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        return None
+    if result.returncode:
+        print(
+            "WARN: Shiki highlighting failed; language-tagged code blocks will render monochrome. "
+            f"{result.stderr.strip() or 'Node renderer failed.'}",
+            file=sys.stderr,
+        )
+        return None
+    try:
+        rendered = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(rendered, list) or len(rendered) != len(blocks):
+        return None
+    return [item if isinstance(item, str) else None for item in rendered]
 
 
 def highlight_code_blocks(html_text: str) -> str:
-    """Apply syntax highlighting to language-tagged code blocks.
+    """Apply static Shiki highlighting to language-tagged code blocks.
 
-    Returns HTML unchanged if Pygments is not installed or no
-    language-tagged blocks are found.
+    The function is idempotent: Shiki output has no ``language-*`` class on
+    ``code`` and therefore is left untouched on a second render pass.
     """
     matches = list(CODE_BLOCK_RE.finditer(html_text))
-    if not matches or not any(
-        _language_from_open_tag(match.group("open")) for match in matches
-    ):
+    selected = [
+        (match, _language_from_open_tag(match.group("open")))
+        for match in matches
+    ]
+    selected = [(match, language) for match, language in selected if language]
+    if not selected:
         return html_text
 
-    try:
-        import pygments  # noqa: F401
-    except ImportError:
-        _warn_missing_pygments()
+    blocks = [
+        {"code": html_mod.unescape(match.group("code")), "language": language}
+        for match, language in selected
+    ]
+    rendered = _render_with_shiki(blocks)
+    if rendered is None:
+        _warn_missing_shiki()
         return html_text
 
-    return CODE_BLOCK_RE.sub(_highlight_block, html_text)
+    replacements = iter(rendered)
+
+    def replace(match: re.Match[str]) -> str:
+        # The callback receives fresh match objects, so select by language
+        # again instead of comparing match identities from the first scan.
+        if _language_from_open_tag(match.group("open")) is None:
+            return match.group(0)
+        highlighted = next(replacements)
+        return highlighted if highlighted is not None else match.group(0)
+
+    return CODE_BLOCK_RE.sub(replace, html_text)

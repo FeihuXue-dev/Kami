@@ -28,6 +28,8 @@ PACKAGE_REQUIRED_ENTRIES=(
   "scripts/build.py"
   "scripts/ensure-fonts.sh"
   "scripts/ensure_mathjax.sh"
+  "scripts/ensure_shiki.sh"
+  "scripts/shiki_highlight.mjs"
   "scripts/math_render.py"
   "scripts/mathjax_svg.js"
   "scripts/mathjax-runtime/package.json"

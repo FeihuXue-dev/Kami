@@ -18,8 +18,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install test extras
-        run: python3 -m pip install Pygments
+      - name: Set up Node for Shiki
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install cached Shiki runtime
+        run: bash skills/kami/scripts/ensure_shiki.sh
 
       - name: Lint templates and check token sync
         run: python3 skills/kami/scripts/build.py --check
@@ -58,9 +63,9 @@ jobs:
         # pymupdf backs --check-fonts (it reads the text spans of a rendered PDF);
         # without it that step exits 2 on a missing dependency rather than judging
         # the fonts.
-        run: python3 -m pip install weasyprint pypdf pymupdf Pygments python-pptx
+        run: python3 -m pip install weasyprint pypdf pymupdf python-pptx
 
-      - name: Set up Node.js for strict mathematics
+      - name: Set up Node.js for Shiki and strict mathematics
         uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -69,6 +74,9 @@ jobs:
 
       - name: Install locked MathJax runtime
         run: bash skills/kami/scripts/ensure_mathjax.sh
+
+      - name: Install cached Shiki runtime
+        run: bash skills/kami/scripts/ensure_shiki.sh
 
       - name: Install the skill the way users do
         # The skills CLI copies the directory that owns SKILL.md. This guards
